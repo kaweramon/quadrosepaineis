@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -27,6 +28,9 @@ public class Product {
 	@NotNull
 	@Size(min = 3, max = 50)
 	private String name;
+	
+	@NotNull
+	private Double price;
 	
 	private String description;
 	
@@ -47,7 +51,8 @@ public class Product {
 	
 	private Double weight;
 	
-	@NotNull
 	private Boolean isActive;
 	
+	@Lob
+	private byte[] photo;
 }

@@ -1,6 +1,5 @@
 package com.quadrosepaineisapi.model.dto;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +26,8 @@ public class ProductDto {
 	@NotNull
 	@Size(min = 3, max = 50)
 	private String name;
+	private Double price;
 	private String description;
-	private LocalDateTime registerDate;
 	private String registerDateStr;
 	private List<Category> categories;
 	private Double width;
@@ -37,20 +36,22 @@ public class ProductDto {
 	private Double weight;
 	@NotNull
 	private Boolean isActive;
+	private byte[] photo;
 	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	
-	public ProductDto(Long id, String name, String registerDateStr) {
+	public ProductDto(Long id, String name, String registerDateStr, byte[] photo) {
 		this.id = id;
 		this.name = name;
 		this.registerDateStr = registerDateStr;
+		this.photo = photo;
 	}
 	
 	public static Page<ProductToListDto> fromObject(Page<Product> products, Pageable pageable) {
 		List<ProductToListDto> productsDto = new ArrayList<ProductToListDto>();
 		for (Product product : products) {
 			String registerDateStr = formatter.format(product.getRegisterDate());
-			productsDto.add(new ProductToListDto(product.getId(), product.getName(), 
-					product.getDescription(), registerDateStr));
+			productsDto.add(new ProductToListDto(product.getId(), product.getName(), product.getPrice(),
+					product.getDescription(), registerDateStr, product.getPhoto()));
 		}
 		
 		return new PageImpl<>(productsDto, pageable, products.getTotalPages());
@@ -79,14 +80,18 @@ public class ProductDto {
 	public static class ProductToListDto {
 		private Long id;
 		private String name;
+		private Double price;
 		private String description;
 		private String registerDateStr;
+		private byte[] photo;
 		
-		public ProductToListDto(Long id, String name, String description, String registerDateStr) {
+		public ProductToListDto(Long id, String name, Double price, String description, String registerDateStr, byte[] photo) {
 			this.id = id;
 			this.name = name;
+			this.price = price;
 			this.description = description;
 			this.registerDateStr = registerDateStr;
+			this.photo = photo;
 		}
 	}
 	

@@ -10,6 +10,7 @@ public class UrlConstants {
 	// Products
 	public static final String URL_PRODUCTS = "/products";
 	public static final String URL_IS_ACTIVE = "/is-active";
+	public static final String URL_UPLOAD = "/upload";
 	
 	// Releases
 	public static final String URL_RELEASES = "/releases";

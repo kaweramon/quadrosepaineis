@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quadrosepaineisapi.event.ResourceCreatedEvent;
 import com.quadrosepaineisapi.exceptionhandler.QuadrosePaineisExceptionHandler.ErrorMessage;
 import com.quadrosepaineisapi.model.release.FinancialRelease;
+import com.quadrosepaineisapi.repository.FinancialReleaseRepository;
+import com.quadrosepaineisapi.repository.filter.FinancialReleaseFilter;
+import com.quadrosepaineisapi.repository.projection.FinancialReleaseResume;
 import com.quadrosepaineisapi.service.ReleaseService;
 import com.quadrosepaineisapi.service.exception.FinancialReleaseCategoryNotFoundException;
 import com.quadrosepaineisapi.service.exception.ProductNotFoundOrInactiveException;
@@ -41,6 +46,9 @@ public class FinancialReleaseResource {
 	@Autowired
 	private MessageSource messageSource;
 	
+	@Autowired
+	private FinancialReleaseRepository repo;
+	
 	@PostMapping
 	public ResponseEntity<FinancialRelease> create(@Valid @RequestBody FinancialRelease release, HttpServletResponse response) {
 		FinancialRelease releaseCreated = service.create(release);
@@ -49,8 +57,13 @@ public class FinancialReleaseResource {
 	}
 
 	@GetMapping
-	public List<FinancialRelease> list() {
-		return service.list();
+	public Page<FinancialRelease> search(FinancialReleaseFilter filter, Pageable pageable) {
+		return repo.filter(filter, pageable);
+	}
+	
+	@GetMapping(path = "/resume")
+	public Page<FinancialReleaseResume> resume(FinancialReleaseFilter filter, Pageable pageable) {
+		return repo.resume(filter, pageable);
 	}
 	
 	@GetMapping(UrlConstants.PARAM_ID)

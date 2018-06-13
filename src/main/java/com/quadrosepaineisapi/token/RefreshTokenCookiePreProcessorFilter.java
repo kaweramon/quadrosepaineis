@@ -25,7 +25,6 @@ public class RefreshTokenCookiePreProcessorFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		// TODO Auto-generated method stub
 		HttpServletRequest req = (HttpServletRequest) request;
 		
 		if ("/oauth/token".equalsIgnoreCase(req.getRequestURI())

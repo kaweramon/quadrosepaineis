@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import lombok.Data;
@@ -61,6 +64,30 @@ public class QuadrosePaineisExceptionHandler extends ResponseEntityExceptionHand
 	public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
 		String resourceNotAllowed = messageSource.getMessage("resource.not-allowed", null, LocaleContextHolder.getLocale());
 		List<ErrorMessage> listErrors = Arrays.asList(new ErrorMessage(resourceNotAllowed, 
+				ExceptionUtils.getRootCauseMessage(ex)));
+		return handleExceptionInternal(ex, listErrors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+	
+	@ExceptionHandler({MultipartException.class})
+	public ResponseEntity<Object> handleMultipartException(MultipartException ex, WebRequest request) {
+		String uploadMaxSize = messageSource.getMessage("upload.max-size", null, LocaleContextHolder.getLocale());
+		List<ErrorMessage> listErrors = Arrays.asList(new ErrorMessage(uploadMaxSize, 
+				ExceptionUtils.getRootCauseMessage(ex)));
+		return handleExceptionInternal(ex, listErrors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+	
+	@ExceptionHandler({SizeLimitExceededException.class})
+	public ResponseEntity<Object> handleSizeLimitExceededException(SizeLimitExceededException ex, WebRequest request) {
+		String uploadMaxSize = messageSource.getMessage("upload.max-size", null, LocaleContextHolder.getLocale());
+		List<ErrorMessage> listErrors = Arrays.asList(new ErrorMessage(uploadMaxSize, 
+				ExceptionUtils.getRootCauseMessage(ex)));
+		return handleExceptionInternal(ex, listErrors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+	
+	@ExceptionHandler({MaxUploadSizeExceededException.class})
+	public ResponseEntity<Object> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex, WebRequest request) {
+		String uploadMaxSize = messageSource.getMessage("upload.max-size", null, LocaleContextHolder.getLocale());
+		List<ErrorMessage> listErrors = Arrays.asList(new ErrorMessage(uploadMaxSize, 
 				ExceptionUtils.getRootCauseMessage(ex)));
 		return handleExceptionInternal(ex, listErrors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}

@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import com.quadrosepaineisapi.model.Product;
 import com.quadrosepaineisapi.model.Product_;
 import com.quadrosepaineisapi.repository.filter.ProductFilter;
+import com.quadrosepaineisapi.repository.projection.ProductResume;
 
 public class ProductRepositoryImpl implements ProductRepositoryQuery {
 
@@ -40,6 +41,27 @@ public class ProductRepositoryImpl implements ProductRepositoryQuery {
 		return new PageImpl<>(query.getResultList(), pageable, getTotal(productFilter));
 	}
 
+	@Override
+	public Page<ProductResume> resume(ProductFilter productFilter, Pageable pageable) {
+	
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaQuery<ProductResume> criteria = builder.createQuery(ProductResume.class);
+		Root<Product> root = criteria.from(Product.class);
+		
+		criteria.select(builder.construct(ProductResume.class, 
+				root.get(Product_.id), root.get(Product_.name), 
+				root.get(Product_.description), root.get(Product_.registerDate), root.get(Product_.photo)));
+		
+		Predicate[] predicates = createRestrictions(productFilter, builder, root);
+		
+		criteria.where(predicates);
+		TypedQuery<ProductResume> query = manager.createQuery(criteria);
+		
+		addPageableRestrictions(query, pageable);
+		
+		return new PageImpl<>(query.getResultList(), pageable, getTotal(productFilter));
+	}	
+	
 	private Predicate[] createRestrictions(ProductFilter productFilter, CriteriaBuilder builder, Root<Product> root) {
 		
 		List<Predicate> predicates = new ArrayList<Predicate>();
@@ -64,10 +86,14 @@ public class ProductRepositoryImpl implements ProductRepositoryQuery {
 					productFilter.getRegisterDateTo()));
 		}
 		
+		if (productFilter.getIsActive() != null) {
+			predicates.add(builder.equal(root.get(Product_.isActive), productFilter.getIsActive()));
+		}
+		
 		return predicates.toArray(new Predicate[predicates.size()]);
 	}
 	
-	private void addPageableRestrictions(TypedQuery<Product> query, Pageable pageable) {
+	private void addPageableRestrictions(TypedQuery<?> query, Pageable pageable) {
 		query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
 		query.setMaxResults(pageable.getPageSize());
 	}
@@ -84,5 +110,5 @@ public class ProductRepositoryImpl implements ProductRepositoryQuery {
 		
 		return manager.createQuery(criteria).getSingleResult();
 	}
-	
+
 }

@@ -18,4 +18,6 @@ public class ProductFilter {
 	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime registerDateTo;
 	
+	private Boolean isActive;
+	
 }
