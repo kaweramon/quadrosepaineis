@@ -12,8 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.quadrosepaineisapi.model.Category;
 import com.quadrosepaineisapi.model.Product;
+import com.quadrosepaineisapi.model.ProductImgUrl;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,14 +38,14 @@ public class ProductDto {
 	private Double weight;
 	@NotNull
 	private Boolean isActive;
-	private byte[] photo;
 	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private List<ProductImgUrl> listProdImgUrls;
 	
-	public ProductDto(Long id, String name, String registerDateStr, byte[] photo) {
+	public ProductDto(Long id, String name, String registerDateStr) {
 		this.id = id;
 		this.name = name;
 		this.registerDateStr = registerDateStr;
-		this.photo = photo;
 	}
 	
 	public static Page<ProductToListDto> fromObject(Page<Product> products, Pageable pageable) {
@@ -51,7 +53,7 @@ public class ProductDto {
 		for (Product product : products) {
 			String registerDateStr = formatter.format(product.getRegisterDate());
 			productsDto.add(new ProductToListDto(product.getId(), product.getName(), product.getPrice(),
-					product.getDescription(), registerDateStr, product.getPhoto()));
+					product.getDescription(), registerDateStr, product.getSequence(), product.getListImgUrl().get(0).getUrl()));
 		}
 		
 		return new PageImpl<>(productsDto, pageable, products.getTotalPages());
@@ -65,6 +67,8 @@ public class ProductDto {
 			productDto.setCategories(product.getCategories());
 		if (product.getRegisterDate() != null)
 			productDto.setRegisterDateStr(formatter.format(product.getRegisterDate()));
+		if (product.getListImgUrl() != null)
+			productDto.setListProdImgUrls(product.getListImgUrl());
 		return productDto;
 	}
 	
@@ -73,6 +77,10 @@ public class ProductDto {
 		BeanUtils.copyProperties(this, product);
 		if (this.categories != null)
 			product.setCategories(this.categories);
+		
+		if (this.listProdImgUrls != null)
+			product.setListImgUrl(this.listProdImgUrls);
+		
 		return product;
 	}
 	
@@ -83,15 +91,18 @@ public class ProductDto {
 		private Double price;
 		private String description;
 		private String registerDateStr;
-		private byte[] photo;
+		private Integer sequence;
+		private String mainPhotoUrl;
 		
-		public ProductToListDto(Long id, String name, Double price, String description, String registerDateStr, byte[] photo) {
+		public ProductToListDto(Long id, String name, Double price, String description, 
+				String registerDateStr, Integer sequence, String mainPhotoUrl) {
 			this.id = id;
 			this.name = name;
 			this.price = price;
 			this.description = description;
 			this.registerDateStr = registerDateStr;
-			this.photo = photo;
+			this.sequence = sequence;
+			this.mainPhotoUrl = mainPhotoUrl;
 		}
 	}
 	

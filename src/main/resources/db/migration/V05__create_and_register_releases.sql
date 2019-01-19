@@ -12,9 +12,3 @@ CREATE TABLE financial_release (
     FOREIGN KEY (id_category) REFERENCES category(id),
     FOREIGN KEY (id_product) REFERENCES product(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-INSERT INTO financial_release (description, type, value, register_date, id_category, id_product) 
-VALUES ('Teste 1', 'RECEITA', 90.0, NOW(), 1, 1);
-
-INSERT INTO financial_release (description, type, value, register_date, id_category, id_product) 
-VALUES ('Teste 2', 'DESPESA', 10.0, NOW(), 1, 1);

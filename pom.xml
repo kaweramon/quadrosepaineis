@@ -5,7 +5,7 @@
 
 	<groupId>com.quadrosepaineis.quadrosepaineis-api</groupId>
 	<artifactId>quadrosepaineis-api</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>quadrosepaineis-api</name>
@@ -72,7 +72,7 @@
 		  <artifactId>commons-lang3</artifactId>
 		  <version>3.7</version>
 		</dependency>
-		
+	
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -88,6 +88,12 @@
 		    <artifactId>spring-security-jwt</artifactId>
 		</dependency>
 		
+		<dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-imaging</artifactId>
+		  <version>1.0-SNAPSHOT</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
@@ -99,5 +105,19 @@
 		</plugins>
 	</build>
 
+
+	<repositories>
+		<repository>
+		  <id>apache.snapshots</id>
+		  <name>Apache Development Snapshot Repository</name>
+		  <url>https://repository.apache.org/content/repositories/snapshots/</url>
+		  <releases>
+		    <enabled>false</enabled>
+		  </releases>
+		  <snapshots>
+		    <enabled>true</enabled>
+		  </snapshots>
+		</repository> 
+	</repositories>
 
 </project>

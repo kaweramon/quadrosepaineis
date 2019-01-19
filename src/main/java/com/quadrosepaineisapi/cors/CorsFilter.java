@@ -19,7 +19,8 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
-	private String originAllow = "http://localhost:4200"; //TODO: Configurar para produção e dev
+//	private String originAllow = "http://localhost:4200"; //TODO: Configurar para produção e dev
+	private String originAllow = "http://200.98.175.61:6565";
 	
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -33,7 +34,7 @@ public class CorsFilter implements Filter {
 		
 		if ("OPTIONS".equals(request.getMethod()) && originAllow.equals(request.getHeader("Origin"))) {
 			response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS");
-			response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");
+			response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, ng-api, token-type, Auth-Token");
 			response.setHeader("Access-Control-Max-Age", "3600");
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else {

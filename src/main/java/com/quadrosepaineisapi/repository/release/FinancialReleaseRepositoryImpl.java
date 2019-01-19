@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
 import com.quadrosepaineisapi.model.release.FinancialRelease;
-import com.quadrosepaineisapi.model.release.FinancialRelease_;
 import com.quadrosepaineisapi.repository.filter.FinancialReleaseFilter;
 import com.quadrosepaineisapi.repository.projection.FinancialReleaseResume;
 
@@ -44,42 +43,42 @@ public class FinancialReleaseRepositoryImpl implements FinancialReleaseRepositor
 		List<Predicate> predicates = new ArrayList<Predicate>();
 		
 		if (!StringUtils.isEmpty(filter.getDescription())) {
-			predicates.add(builder.like(builder.lower(root.get(FinancialRelease_.description)), 
+			predicates.add(builder.like(builder.lower(root.get("description")), 
 					"%" + filter.getDescription() + "%"));
 		}
 		
 		if (!StringUtils.isEmpty(filter.getObs())) {
-			predicates.add(builder.like(builder.lower(root.get(FinancialRelease_.obs)), 
+			predicates.add(builder.like(builder.lower(root.get("obs")), 
 					"%" + filter.getObs() + "%"));
 		}
 		
 		if (filter.getDueDateFrom() != null) {
-			predicates.add(builder.greaterThanOrEqualTo(root.get(FinancialRelease_.dueDate), 
+			predicates.add(builder.greaterThanOrEqualTo(root.get("dueDate"), 
 					filter.getDueDateFrom()));
 		}
 		
 		if (filter.getDueDateTo() != null) {
-			predicates.add(builder.lessThanOrEqualTo(root.get(FinancialRelease_.dueDate), 
+			predicates.add(builder.lessThanOrEqualTo(root.get("dueDate"), 
 					filter.getDueDateTo()));
 		}
 		
 		if (filter.getPayDateFrom() != null) {
-			predicates.add(builder.greaterThanOrEqualTo(root.get(FinancialRelease_.payDate), 
+			predicates.add(builder.greaterThanOrEqualTo(root.get("payDate"), 
 					filter.getPayDateFrom()));
 		}
 		
 		if (filter.getPayDateTo() != null) {
-			predicates.add(builder.lessThanOrEqualTo(root.get(FinancialRelease_.payDate), 
+			predicates.add(builder.lessThanOrEqualTo(root.get("payDate"), 
 					filter.getPayDateTo()));
 		}
 		
 		if (filter.getRegisterDateFrom() != null) {
-			predicates.add(builder.greaterThanOrEqualTo(root.get(FinancialRelease_.registerDate), 
+			predicates.add(builder.greaterThanOrEqualTo(root.get("registerDate"), 
 					filter.getRegisterDateFrom()));
 		}
 		
 		if (filter.getRegisterDateTo() != null) {
-			predicates.add(builder.lessThanOrEqualTo(root.get(FinancialRelease_.registerDate), 
+			predicates.add(builder.lessThanOrEqualTo(root.get("registerDate"), 
 					filter.getRegisterDateTo()));
 		}
 		
@@ -94,9 +93,9 @@ public class FinancialReleaseRepositoryImpl implements FinancialReleaseRepositor
 		Root<FinancialRelease> root = criteria.from(FinancialRelease.class);
 		
 		criteria.select(builder.construct(FinancialReleaseResume.class
-				, root.get(FinancialRelease_.id), root.get(FinancialRelease_.description)
-				, root.get(FinancialRelease_.obs)
-				, root.get(FinancialRelease_.value)));
+				, root.get("id"), root.get("description")
+				, root.get("obs")
+				, root.get("value")));
 		
 		Predicate[] predicates = createRestrictions(builder, root, financialReleaseFilter);
 		criteria.where(predicates);

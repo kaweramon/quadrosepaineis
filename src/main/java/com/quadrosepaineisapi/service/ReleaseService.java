@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.quadrosepaineisapi.model.Product;
 import com.quadrosepaineisapi.model.release.FinancialRelease;
@@ -27,6 +28,7 @@ public class ReleaseService {
 	@Autowired
 	private FinancialReleaseCategoryRepository financialReleaseCategoryRepository;
 	
+	@Transactional(readOnly = false)
 	public FinancialRelease create(FinancialRelease release) {
 		
 		if (release.getProduct() != null) {
@@ -46,10 +48,12 @@ public class ReleaseService {
 		return repository.save(release);
 	}
 
+	@Transactional(readOnly = true)
 	public List<FinancialRelease> list() {
 		return repository.findAll();
 	}
 
+	@Transactional(readOnly = true)
 	public FinancialRelease view(Long id) {
 		return repository.findOne(id);
 	}

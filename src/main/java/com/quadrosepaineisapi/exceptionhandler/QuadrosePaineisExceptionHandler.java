@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+
 import lombok.Data;
 
 @ControllerAdvice
@@ -36,13 +39,23 @@ public class QuadrosePaineisExceptionHandler extends ResponseEntityExceptionHand
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		
-		String invalidMessage = messageSource.getMessage("message.invalid", null, LocaleContextHolder.getLocale());
+		String	invalidMessage = messageSource.getMessage("message.invalid", null, LocaleContextHolder.getLocale());
 		List<ErrorMessage> listErrors = Arrays.asList(new ErrorMessage(invalidMessage, 
 				ex.getCause() != null ? ex.getCause().toString() : ex.toString()));
 		return handleExceptionInternal(ex, listErrors, headers, HttpStatus.BAD_REQUEST, request);
 	}
 
+	@ExceptionHandler({MySQLIntegrityConstraintViolationException.class})
+	protected ResponseEntity<Object> handleMySQLIntegrityConstraintViolationException(
+			MySQLIntegrityConstraintViolationException ex, WebRequest request) {
+		String errorMessage = "";
+		if (ex.toString().contains("Duplicate entry")) {
+			errorMessage = "Já existe um registro com o valor " + StringUtils.substringBetween("'", "'");
+		}
+		List<ErrorMessage> listErrors = Arrays.asList(new ErrorMessage(errorMessage, ex.toString()));
+		return handleExceptionInternal(ex, listErrors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -62,9 +75,14 @@ public class QuadrosePaineisExceptionHandler extends ResponseEntityExceptionHand
 	
 	@ExceptionHandler({DataIntegrityViolationException.class})
 	public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
-		String resourceNotAllowed = messageSource.getMessage("resource.not-allowed", null, LocaleContextHolder.getLocale());
+		String resourceNotAllowed = "";
+		String rootCauseException = ExceptionUtils.getRootCauseMessage(ex);
+		if (rootCauseException.contains("Duplicate entry"))
+			resourceNotAllowed = "Já existe um registro com o valor " + StringUtils.substringBetween(rootCauseException, "'");
+		else
+			resourceNotAllowed = messageSource.getMessage("resource.not-allowed", null, LocaleContextHolder.getLocale());
 		List<ErrorMessage> listErrors = Arrays.asList(new ErrorMessage(resourceNotAllowed, 
-				ExceptionUtils.getRootCauseMessage(ex)));
+				rootCauseException));
 		return handleExceptionInternal(ex, listErrors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 	

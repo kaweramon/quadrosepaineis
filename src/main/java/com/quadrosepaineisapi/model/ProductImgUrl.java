@@ -8,26 +8,30 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@EqualsAndHashCode
-@Entity(name = "category")
-@Data
-public class Category {
+@Entity(name = "img_url")
+@Data()
+@NoArgsConstructor()
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ProductImgUrl {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@NotNull
-	@Size(min = 3, max = 20)
+	@Size(min = 3, max = 255)
 	@Column(unique = true)
-	private String name;
+	private String url;
 	
-	public Category(String name) { 
-		this.name = name;
+	private Boolean isActive;
+	
+	public ProductImgUrl(String url) {
+		this.url = url;
+		this.isActive = true;
 	}
 }
