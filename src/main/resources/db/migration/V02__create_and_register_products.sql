@@ -11,3 +11,8 @@ CREATE TABLE product (
     is_active BOOLEAN NOT NULL DEFAULT true,
     sequence INT(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO product (name, price, description, is_active, register_date, sequence) 
+VALUES ('Teste 1', 100, 'Teste 1 Descrição', true, NOW(), 1);
+INSERT INTO product (name, price, description, is_active, register_date, sequence) 
+VALUES ('Teste 2', 100, 'Teste 2 Descrição', true, NOW(), 2);

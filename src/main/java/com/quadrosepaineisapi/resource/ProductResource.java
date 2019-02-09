@@ -64,19 +64,19 @@ public class ProductResource {
 		return ResponseEntity.status(HttpStatus.CREATED).body(ProductDto.fromObject(productCreated));
 	}
 	
-//	@PreAuthorize("hasAuthority('RETRIEVE_PRODUCT')")
+	@PreAuthorize("hasAuthority('RETRIEVE_PRODUCT')")
 	@GetMapping
 	public Page<ProductToListDto> search(ProductFilter productFilter,@PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
 		return ProductDto.fromObject(repository.filter(productFilter, pageable), pageable);
 	}
 	
-//	@PreAuthorize("hasAuthority('RETRIEVE_PRODUCT')")
+	@PreAuthorize("hasAuthority('RETRIEVE_PRODUCT')")
 	@GetMapping(path = "/resume")
 	public Page<ProductResume> searchResume(ProductFilter productFilter, Pageable pageable) {
 		return repository.resume(productFilter, pageable);
 	}
 	
-//	@PreAuthorize("hasAuthority('RETRIEVE_PRODUCT')")
+	@PreAuthorize("hasAuthority('RETRIEVE_PRODUCT')")
 	@GetMapping(path = UrlConstants.PARAM_ID)
 	@ResponseBody
 	public ResponseEntity<ProductDto> view(@PathVariable("id") Long id) {

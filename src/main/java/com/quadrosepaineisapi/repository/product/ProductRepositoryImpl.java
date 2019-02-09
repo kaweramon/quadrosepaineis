@@ -49,9 +49,6 @@ public class ProductRepositoryImpl implements ProductRepositoryQuery {
 		CriteriaQuery<ProductResume> criteria = builder.createQuery(ProductResume.class);
 		Root<Product> root = criteria.from(Product.class);
 		
-		/*criteria.select(builder.construct(ProductResume.class, 
-				root.get(Product_.id), root.get(Product_.name), 
-				root.get(Product_.description), root.get(Product_.registerDate), root.get(Product_.photo)));*/
 		criteria.select(builder.construct(ProductResume.class, 
 				root.get("id"), root.get("name"), root.get("price"),
 				root.get("description"), root.get("sequence")));

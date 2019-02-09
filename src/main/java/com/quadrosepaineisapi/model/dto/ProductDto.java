@@ -53,7 +53,8 @@ public class ProductDto {
 		for (Product product : products) {
 			String registerDateStr = formatter.format(product.getRegisterDate());
 			productsDto.add(new ProductToListDto(product.getId(), product.getName(), product.getPrice(),
-					product.getDescription(), registerDateStr, product.getSequence(), product.getListImgUrl().get(0).getUrl()));
+					product.getDescription(), registerDateStr, product.getSequence(), product.getListImgUrl() != null && product.getListImgUrl().size() > 0 
+					? product.getListImgUrl().get(0).getUrl() : null));
 		}
 		
 		return new PageImpl<>(productsDto, pageable, products.getTotalPages());

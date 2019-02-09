@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,9 +20,11 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "product")
 @Data
+@NoArgsConstructor
 public class Product {
 
 	@Id
@@ -41,7 +44,7 @@ public class Product {
 	@Column(name = "register_date")
 	private LocalDateTime registerDate;
 	
-	@ManyToMany(cascade = CascadeType.MERGE)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "product_categories", joinColumns = 
 		{@JoinColumn (name = "id_product", referencedColumnName = "id")}, inverseJoinColumns = 
 		{@JoinColumn (name = "id_category", referencedColumnName = "id")})
@@ -65,5 +68,14 @@ public class Product {
 			{@JoinColumn(name = "id_product", referencedColumnName = "id")}, inverseJoinColumns = 
 			{@JoinColumn(name = "id_img_url", referencedColumnName = "id")})
 	private List<ProductImgUrl> listImgUrl;
+
+	public Product(String name, Double price, String description) {
+		this.name = name;
+		this.price = price;
+		this.description = description;
+	}
+	
+	
+	
 
 }
