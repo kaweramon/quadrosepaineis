@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @EqualsAndHashCode
-@Entity(name = "category")
+@Entity(name = "categories")
 @Data
 public class Category {
 

@@ -76,13 +76,13 @@ public class FinancialReleaseResource {
 	public ResponseEntity<Object> handleProductNotFoundOrInactiveException(ProductNotFoundOrInactiveException ex) {
 		String msgUser = messageSource.getMessage("product.not-found-or-inactive", null, LocaleContextHolder.getLocale());
 		List<ErrorMessage> errors = Arrays.asList(new ErrorMessage(msgUser, ex.toString()));
-		return ResponseEntity.badRequest().body(errors);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
 	}
 	
 	@ExceptionHandler({FinancialReleaseCategoryNotFoundException.class})
 	public ResponseEntity<Object> handleFinancialReleaseCategoryNotFoundException(FinancialReleaseCategoryNotFoundException ex) {
 		String msgUser = messageSource.getMessage("financialRelease.not-found", null, LocaleContextHolder.getLocale());
 		List<ErrorMessage> errors = Arrays.asList(new ErrorMessage(msgUser, ex.toString()));
-		return ResponseEntity.badRequest().body(errors);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
 	}
 }

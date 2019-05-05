@@ -1,21 +1,26 @@
 package com.quadrosepaineisapi.service;
 
+import com.quadrosepaineisapi.model.Category;
+import com.quadrosepaineisapi.repository.CategoryRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.quadrosepaineisapi.model.Category;
-import com.quadrosepaineisapi.repository.CategoryRepository;
+import javax.persistence.EntityNotFoundException;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class CategoryService {
 
-	@Autowired
-	private CategoryRepository repository;
-	
-	@Transactional(readOnly = false)
+	private final CategoryRepository repository;
+
+	public void create(Category category) {
+		repository.save(category);
+	}
+
 	public Category update(Category category, Long id) {
 		Category categorySaved = findById(id);
 		BeanUtils.copyProperties(category, categorySaved, "id");
@@ -28,7 +33,7 @@ public class CategoryService {
 		Category category = repository.findOne(id);
 		
 		if (category == null)
-			throw new EmptyResultDataAccessException(1);
+			throw new EntityNotFoundException("Categoria não encontrada!");
 		
 		return category;
 	}

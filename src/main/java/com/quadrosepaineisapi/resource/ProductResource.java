@@ -1,10 +1,14 @@
 package com.quadrosepaineisapi.resource;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
+import com.quadrosepaineisapi.event.ResourceCreatedEvent;
+import com.quadrosepaineisapi.model.Product;
+import com.quadrosepaineisapi.model.dto.ProductDto;
+import com.quadrosepaineisapi.model.dto.ProductDto.ProductToListDto;
+import com.quadrosepaineisapi.repository.ProductRepository;
+import com.quadrosepaineisapi.repository.filter.ProductFilter;
+import com.quadrosepaineisapi.repository.projection.ProductResume;
+import com.quadrosepaineisapi.service.ProductServiceImpl;
+import com.quadrosepaineisapi.util.UrlConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -13,29 +17,12 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.quadrosepaineisapi.event.ResourceCreatedEvent;
-import com.quadrosepaineisapi.model.Product;
-import com.quadrosepaineisapi.model.dto.ProductDto;
-import com.quadrosepaineisapi.model.dto.ProductDto.ProductToListDto;
-import com.quadrosepaineisapi.repository.ProductRepository;
-import com.quadrosepaineisapi.repository.filter.ProductFilter;
-import com.quadrosepaineisapi.repository.projection.ProductResume;
-import com.quadrosepaineisapi.service.ProductService;
-import com.quadrosepaineisapi.util.UrlConstants;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(UrlConstants.URL_PRODUCTS)
@@ -48,16 +35,15 @@ public class ProductResource {
 	private ApplicationEventPublisher publisher;
 	
 	@Autowired
-	private ProductService service;
+	private ProductServiceImpl service;
 	
 	
 	@PreAuthorize("hasAuthority('CREATE_PRODUCT')")
 	@PostMapping
 	@ResponseBody
-	@Transactional(readOnly = false)
-	public ResponseEntity<ProductDto> create(@RequestBody @Valid Product product, 
+	public ResponseEntity<ProductDto> create(@RequestBody @Valid ProductDto productDto,
 			HttpServletResponse response) {
-		Product productCreated = service.create(product);
+		Product productCreated = service.create(productDto.toObject());
 		
 		publisher.publishEvent(new ResourceCreatedEvent(this, response, productCreated.getId()));
 		

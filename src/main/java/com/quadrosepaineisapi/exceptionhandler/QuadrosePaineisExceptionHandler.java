@@ -25,10 +25,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
-
 import lombok.Data;
+
+import javax.persistence.EntityNotFoundException;
 
 @ControllerAdvice
 public class QuadrosePaineisExceptionHandler extends ResponseEntityExceptionHandler {
@@ -45,17 +44,6 @@ public class QuadrosePaineisExceptionHandler extends ResponseEntityExceptionHand
 		return handleExceptionInternal(ex, listErrors, headers, HttpStatus.BAD_REQUEST, request);
 	}
 
-	@ExceptionHandler({MySQLIntegrityConstraintViolationException.class})
-	protected ResponseEntity<Object> handleMySQLIntegrityConstraintViolationException(
-			MySQLIntegrityConstraintViolationException ex, WebRequest request) {
-		String errorMessage = "";
-		if (ex.toString().contains("Duplicate entry")) {
-			errorMessage = "Já existe um registro com o valor " + StringUtils.substringBetween("'", "'");
-		}
-		List<ErrorMessage> listErrors = Arrays.asList(new ErrorMessage(errorMessage, ex.toString()));
-		return handleExceptionInternal(ex, listErrors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-	}
-	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -109,7 +97,15 @@ public class QuadrosePaineisExceptionHandler extends ResponseEntityExceptionHand
 				ExceptionUtils.getRootCauseMessage(ex)));
 		return handleExceptionInternal(ex, listErrors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
-	
+
+	@ExceptionHandler(EntityNotFoundException.class)
+	protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
+		String uploadMaxSize = messageSource.getMessage("upload.max-size", null, LocaleContextHolder.getLocale());
+		List<ErrorMessage> listErrors = Arrays.asList(new ErrorMessage(uploadMaxSize,
+				ExceptionUtils.getRootCauseMessage(ex)));
+		return handleExceptionInternal(ex, listErrors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+
 	private List<ErrorMessage> getListErrors(BindingResult bindingResult) {
 		List<ErrorMessage> listErrors = new ArrayList<ErrorMessage>();
 		
