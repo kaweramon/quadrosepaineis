@@ -17,8 +17,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
-import com.quadrosepaineisapi.model.Category;
-import com.quadrosepaineisapi.model.Product;
+import com.quadrosepaineisapi.category.Category;
+import com.quadrosepaineisapi.product.Product;
 import com.quadrosepaineisapi.repository.filter.ProductFilter;
 import com.quadrosepaineisapi.repository.projection.ProductResume;
 

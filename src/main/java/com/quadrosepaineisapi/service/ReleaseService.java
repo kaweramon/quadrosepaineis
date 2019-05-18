@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.quadrosepaineisapi.model.Product;
+import com.quadrosepaineisapi.product.Product;
 import com.quadrosepaineisapi.model.release.FinancialRelease;
 import com.quadrosepaineisapi.model.release.FinancialReleaseCategory;
 import com.quadrosepaineisapi.repository.FinancialReleaseCategoryRepository;
 import com.quadrosepaineisapi.repository.FinancialReleaseRepository;
-import com.quadrosepaineisapi.repository.ProductRepository;
+import com.quadrosepaineisapi.product.ProductRepository;
 import com.quadrosepaineisapi.service.exception.FinancialReleaseCategoryNotFoundException;
 import com.quadrosepaineisapi.service.exception.ProductNotFoundOrInactiveException;
 

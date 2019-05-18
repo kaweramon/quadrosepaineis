@@ -1,6 +1,6 @@
 package com.quadrosepaineisapi.builders;
 
-import com.quadrosepaineisapi.model.Product;
+import com.quadrosepaineisapi.product.Product;
 
 public class ProductBuilder {
 

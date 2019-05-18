@@ -1,7 +1,7 @@
-CREATE TABLE category (
+CREATE TABLE categories (
 	id BIGINT(20) PRIMARY KEY AUTO_INCREMENT,
 	name VARCHAR(50) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO category (name) VALUES ('Mandala');
-INSERT INTO category (name) VALUES ('Mandala Sol');
+INSERT INTO categories (name) VALUES ('Mandala');
+INSERT INTO categories (name) VALUES ('Mandala Sol');

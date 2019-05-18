@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 import lombok.Data;
 
-@Entity(name = "financial_release_category")
+@Entity(name = "financial_release_categories")
 @Data
 public class FinancialReleaseCategory {
 

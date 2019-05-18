@@ -1,8 +1,7 @@
-package com.quadrosepaineisapi.service;
+package com.quadrosepaineisapi.product;
 
-import com.quadrosepaineisapi.builders.ProductBuilder;
-import com.quadrosepaineisapi.model.Product;
-import com.quadrosepaineisapi.repository.ProductRepository;
+import com.quadrosepaineisapi.product.services.ProductService;
+import com.quadrosepaineisapi.product.services.ProductServiceImpl;
 import com.quadrosepaineisapi.util.QuadrosePaineisServiceUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,14 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.quadrosepaineisapi.builders.ProductBuilder.productBuilder;
-import static java.util.function.Predicate.isEqual;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;

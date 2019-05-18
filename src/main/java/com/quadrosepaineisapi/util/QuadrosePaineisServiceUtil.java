@@ -2,8 +2,8 @@ package com.quadrosepaineisapi.util;
 
 import com.quadrosepaineisapi.exceptionhandler.BadRequestException;
 import com.quadrosepaineisapi.exceptionhandler.ResourceNotFoundException;
-import com.quadrosepaineisapi.model.Product;
-import com.quadrosepaineisapi.repository.ProductRepository;
+import com.quadrosepaineisapi.product.Product;
+import com.quadrosepaineisapi.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +14,8 @@ public class QuadrosePaineisServiceUtil {
 	private final ProductRepository prodRepository;
 	
 	public Product getProductById(Long id) {
-		Product product = prodRepository.findOne(id);
-		
-		if (product == null)
-			throw new ResourceNotFoundException(ErrorMessages.PRODUCT_NOT_FOUND);
+		Product product = prodRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.PRODUCT_NOT_FOUND));
 		
 		if (!product.getIsActive())
 			throw new BadRequestException(ErrorMessages.PRODUCT_INACTIVE);

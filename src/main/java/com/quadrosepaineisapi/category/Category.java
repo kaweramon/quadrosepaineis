@@ -1,4 +1,4 @@
-package com.quadrosepaineisapi.model;
+package com.quadrosepaineisapi.category;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

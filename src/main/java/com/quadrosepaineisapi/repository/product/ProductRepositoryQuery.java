@@ -3,7 +3,7 @@ package com.quadrosepaineisapi.repository.product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.quadrosepaineisapi.model.Product;
+import com.quadrosepaineisapi.product.Product;
 import com.quadrosepaineisapi.repository.filter.ProductFilter;
 import com.quadrosepaineisapi.repository.projection.ProductResume;
 

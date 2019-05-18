@@ -1,14 +1,15 @@
-package com.quadrosepaineisapi.resource;
+package com.quadrosepaineisapi.product.v1;
 
 import com.quadrosepaineisapi.event.ResourceCreatedEvent;
-import com.quadrosepaineisapi.model.Product;
-import com.quadrosepaineisapi.model.dto.ProductDto;
-import com.quadrosepaineisapi.model.dto.ProductDto.ProductToListDto;
-import com.quadrosepaineisapi.repository.ProductRepository;
+import com.quadrosepaineisapi.product.Product;
+import com.quadrosepaineisapi.product.dto.ProductDto;
+import com.quadrosepaineisapi.product.dto.ProductDto.ProductToListDto;
+import com.quadrosepaineisapi.product.ProductRepository;
 import com.quadrosepaineisapi.repository.filter.ProductFilter;
 import com.quadrosepaineisapi.repository.projection.ProductResume;
-import com.quadrosepaineisapi.service.ProductServiceImpl;
+import com.quadrosepaineisapi.product.services.ProductServiceImpl;
 import com.quadrosepaineisapi.util.UrlConstants;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -24,20 +25,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.quadrosepaineisapi.util.UrlConstants.URL_UPLOAD_TO_MINIO;
+
 @RestController
 @RequestMapping(UrlConstants.URL_PRODUCTS)
-public class ProductResource {
+@RequiredArgsConstructor
+public class ProductControllerV1 {
 
-	@Autowired
-	private ProductRepository repository;
+	private final ProductRepository repository;
 	
-	@Autowired
-	private ApplicationEventPublisher publisher;
+	private final ApplicationEventPublisher publisher;
 	
-	@Autowired
-	private ProductServiceImpl service;
-	
-	
+	private final ProductServiceImpl service;
+
 	@PreAuthorize("hasAuthority('CREATE_PRODUCT')")
 	@PostMapping
 	@ResponseBody
@@ -81,7 +81,14 @@ public class ProductResource {
 	public void uploadImage(@PathVariable Long id, @RequestParam("photo") MultipartFile photo) {
 		service.uploadImage(id, photo);
 	}
-	
+
+	@PutMapping(UrlConstants.PARAM_ID + URL_UPLOAD_TO_MINIO)
+	@PreAuthorize("hasAuthority('UPDATE_PRODUCT')")
+	@ResponseStatus(HttpStatus.OK)
+	public void uploadToMinio(@PathVariable Long id, @RequestParam("photo") MultipartFile photo) {
+		service.uploadToMinio(id, photo);
+	}
+
 	@PutMapping(UrlConstants.PARAM_ID + UrlConstants.URL_IS_ACTIVE)
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("hasAuthority('UPDATE_PRODUCT')")

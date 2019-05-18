@@ -1,4 +1,4 @@
-package com.quadrosepaineisapi.model;
+package com.quadrosepaineisapi.product;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +19,8 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.quadrosepaineisapi.category.Category;
+import com.quadrosepaineisapi.model.ProductImgUrl;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

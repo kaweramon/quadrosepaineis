@@ -1,10 +1,9 @@
 package com.quadrosepaineisapi.service;
 
-import com.quadrosepaineisapi.builders.ProductBuilder;
 import com.quadrosepaineisapi.exceptionhandler.BadRequestException;
 import com.quadrosepaineisapi.exceptionhandler.ResourceNotFoundException;
-import com.quadrosepaineisapi.model.Product;
-import com.quadrosepaineisapi.repository.ProductRepository;
+import com.quadrosepaineisapi.product.Product;
+import com.quadrosepaineisapi.product.ProductRepository;
 import com.quadrosepaineisapi.util.QuadrosePaineisServiceUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static com.quadrosepaineisapi.builders.ProductBuilder.productBuilder;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -39,7 +40,7 @@ public class QuadrosePaineisServiceUtilTest {
     @Test
     @DisplayName("Deve lançar exceção quando não encontrar um produto")
     public void shouldThrowProductNotFound() {
-        when(prodRepository.findOne(anyLong())).thenReturn(null);
+        when(prodRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () ->
                 serviceUtil.getProductById(anyLong()));
@@ -48,17 +49,18 @@ public class QuadrosePaineisServiceUtilTest {
     @Test
     @DisplayName("Deve lançar exceção quando o produto estiver desabilitado")
     public void shouldThrowProductInactived() {
-        when(prodRepository.findOne(anyLong())).thenReturn(productBuilder().inActive().build());
+        Optional<Product> optProduct = Optional.of(productBuilder().inActive().build());
+        when(prodRepository.findById(anyLong())).thenReturn(optProduct);
 
         assertThrows(BadRequestException.class, () ->
                 serviceUtil.getProductById(anyLong()));
-
     }
 
     @Test
     @DisplayName("Deve retornar um produto")
     public void shouldReturnAnProduct() {
-        when(prodRepository.findOne(anyLong())).thenReturn(productBuilder().build());
+        Optional<Product> optProduct = Optional.of(productBuilder().build());
+        when(prodRepository.findById(anyLong())).thenReturn(optProduct);
 
         Product product = serviceUtil.getProductById(anyLong());
 

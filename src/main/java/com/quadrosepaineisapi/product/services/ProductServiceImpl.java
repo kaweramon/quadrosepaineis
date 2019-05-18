@@ -1,25 +1,33 @@
-package com.quadrosepaineisapi.service;
+package com.quadrosepaineisapi.product.services;
 
 import com.quadrosepaineisapi.exceptionhandler.BadRequestException;
-import com.quadrosepaineisapi.model.Product;
 import com.quadrosepaineisapi.model.ProductImage;
 import com.quadrosepaineisapi.model.ProductImgUrl;
-import com.quadrosepaineisapi.repository.ProductRepository;
+import com.quadrosepaineisapi.product.Product;
+import com.quadrosepaineisapi.product.ProductRepository;
 import com.quadrosepaineisapi.util.Constants;
 import com.quadrosepaineisapi.util.ErrorMessages;
 import com.quadrosepaineisapi.util.QuadrosePaineisServiceUtil;
+import io.minio.MinioClient;
+import io.minio.ServerSideEncryption;
+import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.xmlpull.v1.XmlPullParserException;
 
+import javax.crypto.KeyGenerator;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -29,6 +37,8 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional
 public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository repository;
@@ -45,8 +55,10 @@ public class ProductServiceImpl implements ProductService {
 	private Map<String, int[]> mapImgVerticalSizes = new HashMap<>();
 	
 	private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss");
+
+	private final String BUCKET_NAME = "quadrosepaineis";
 	
-	@Transactional
+
 	public Product create(Product product) {
 		product.setSequence(repository.getProductsLength() + 1);
 		product.setRegisterDate(LocalDateTime.now());
@@ -54,25 +66,22 @@ public class ProductServiceImpl implements ProductService {
 		
 		return repository.save(product);
 	}
-	
-	@Transactional
+
 	public Product update(Long id, Product product) {
 		Product productSaved = serviceUtil.getProductById(id);
 		BeanUtils.copyProperties(product, productSaved, "id", "registerDate", "sequence", "listImgUrl");
 		return repository.save(productSaved);
 	}
 
-	@Transactional
 	public void updateIsActiveProperty(Long id, Boolean isActive) {
 		Product productSaved = serviceUtil.getProductById(id);
 		productSaved.setIsActive(isActive);
 		repository.save(productSaved);
 	}
-	
-	@Transactional
+
 	public void updateSequence(List<Product> products) {
 		//TODO: Verificar sequencias
-		List<Product> productsBD = new ArrayList<Product>();
+		List<Product> productsBD = new ArrayList<>();
 		for (Product product : products) {
 			Product prodBD = serviceUtil.getProductById(product.getId());
 			prodBD.setSequence(product.getSequence());
@@ -80,9 +89,7 @@ public class ProductServiceImpl implements ProductService {
 		}
 		repository.save(productsBD);
 	}
-	
-	
-	@Transactional(readOnly = true)
+
 	public Product view(Long id) {
 		Product product = serviceUtil.getProductById(id);
 		
@@ -92,10 +99,9 @@ public class ProductServiceImpl implements ProductService {
 			
 			for (int i = 1; i <= productGalleryPath.listFiles().length / 4; i++) {
 				String path = Constants.ENVIRONMENT + "images/image-resource/" + id + "/" + i + "/";
-				galleryPaths.add(new ProductImage(i, path + "mini", path + "small", path + "product", path + "large"));
+				galleryPaths.add(new ProductImage(i, path + "mini", path + "small",
+						path + "product", path + "large"));
 			}
-			
-//			product.setGalleryPaths(galleryPaths);
 		}
 		
 		return product;
@@ -146,7 +152,82 @@ public class ProductServiceImpl implements ProductService {
 		} else 
 			throw new BadRequestException("Foto é obrigatória");
 	}
-	
+
+	@Override
+	public void uploadToMinio(Long id, MultipartFile photo) {
+
+		MinioClient minioClient = null;
+		try {
+			 minioClient = new MinioClient("https://play.min.io:9000",
+							"Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG");
+		} catch (InvalidEndpointException e) {
+			e.printStackTrace();
+		} catch (InvalidPortException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			if (!minioClient.bucketExists(BUCKET_NAME))
+				minioClient.makeBucket(BUCKET_NAME);
+		} catch (MinioException e) {
+			log.error(e.getMessage(), e);
+		} catch (IOException e) {
+			log.error(e.getMessage(), e);
+		} catch (InvalidKeyException e) {
+			log.error(e.getMessage(), e);
+		} catch (NoSuchAlgorithmException e) {
+			log.error(e.getMessage(), e);
+		} catch (XmlPullParserException e) {
+			log.error(e.getMessage(), e);
+		}
+
+		try {
+
+			Map<String, String> headerMap = new HashMap<>();
+			headerMap.put("Content-Type", "application/octet-stream");
+
+			ServerSideEncryption sse = getServerSideEncryption();
+
+			minioClient.putObject(BUCKET_NAME, "prod" + id,
+					photo.getInputStream(), photo.getSize(), headerMap, sse, "application/octet-stream");
+
+		} catch (InvalidBucketNameException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (NoResponseException e) {
+			e.printStackTrace();
+		} catch (XmlPullParserException e) {
+			e.printStackTrace();
+		} catch (ErrorResponseException e) {
+			e.printStackTrace();
+		} catch (InternalException e) {
+			e.printStackTrace();
+		} catch (InvalidArgumentException e) {
+			e.printStackTrace();
+		} catch (InsufficientDataException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private ServerSideEncryption getServerSideEncryption() {
+		ServerSideEncryption sse = null;
+		try {
+			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+			keyGen.init(256);
+			sse = ServerSideEncryption.withCustomerKey(keyGen.generateKey());
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return sse;
+	}
+
 	public void uploadGallery(Long productId, List<MultipartFile> gallery) {
 		// TODO: salvar imagem nas seguintes resoluções: mini: 48x48, small: 100x100, product: 240x240, large: 400x400
 		if (gallery == null)
@@ -197,7 +278,6 @@ public class ProductServiceImpl implements ProductService {
 		
 	}
 	
-	@Transactional
 	public void updateGallery(Long id, List<MultipartFile> galleryToUpdate, List<Long> listProductImgDeleted) {
 		
 		if (galleryToUpdate.size() > 5) {

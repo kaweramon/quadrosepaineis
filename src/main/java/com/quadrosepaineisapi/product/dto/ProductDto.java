@@ -1,4 +1,4 @@
-package com.quadrosepaineisapi.model.dto;
+package com.quadrosepaineisapi.product.dto;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,8 +13,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.quadrosepaineisapi.model.Category;
-import com.quadrosepaineisapi.model.Product;
+import com.quadrosepaineisapi.category.Category;
+import com.quadrosepaineisapi.product.Product;
 import com.quadrosepaineisapi.model.ProductImgUrl;
 
 import lombok.Data;

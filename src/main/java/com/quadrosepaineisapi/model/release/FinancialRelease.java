@@ -17,12 +17,12 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.quadrosepaineisapi.model.Product;
+import com.quadrosepaineisapi.product.Product;
 
 import lombok.Data;
 
 @Data
-@Entity(name = "financial_release")
+@Entity(name = "financial_releases")
 public class FinancialRelease {
 
 	@Id

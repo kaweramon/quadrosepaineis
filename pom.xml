@@ -52,9 +52,10 @@
 		</dependency>
 		
 		<dependency>
-		    <groupId>com.oracle</groupId>
-		    <artifactId>ojdbc7</artifactId>
-		    <version>12.1.0.1</version>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+			<version>8.0.11</version>
+		    <scope>runtime</scope>
 		</dependency>
 		
 		<dependency>
@@ -146,8 +147,13 @@
 			<artifactId>hamcrest-library</artifactId>
 			<version>2.1</version>
 		</dependency>
+		<!--	MinIo	-->
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>6.0.7</version>
+		</dependency>
 
-		
 	</dependencies>
 
 	<build>
@@ -155,6 +161,12 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- Flyway -->
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>5.2.4</version>
 			</plugin>
 		</plugins>
 	</build>

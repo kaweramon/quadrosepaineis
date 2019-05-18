@@ -1,10 +1,12 @@
-package com.quadrosepaineisapi.resource;
+package com.quadrosepaineisapi.category.v1;
 
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import com.quadrosepaineisapi.category.dto.CategoryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -21,14 +23,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quadrosepaineisapi.event.ResourceCreatedEvent;
-import com.quadrosepaineisapi.model.Category;
-import com.quadrosepaineisapi.repository.CategoryRepository;
-import com.quadrosepaineisapi.service.CategoryService;
+import com.quadrosepaineisapi.category.Category;
+import com.quadrosepaineisapi.category.CategoryRepository;
+import com.quadrosepaineisapi.category.services.CategoryServiceImpl;
 import com.quadrosepaineisapi.util.UrlConstants;
 
 @RestController
 @RequestMapping(UrlConstants.URL_CATEGORIES)
-public class CategoryResource {
+public class CategoryResourceV1 {
 
 	@Autowired
 	private CategoryRepository repository;
@@ -38,7 +40,7 @@ public class CategoryResource {
 	private ApplicationEventPublisher publisher;
 	
 	@Autowired
-	private CategoryService service;
+	private CategoryServiceImpl service;
 	
 	@GetMapping
 	public List<Category> list() {
@@ -46,8 +48,9 @@ public class CategoryResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Category> save(@RequestBody @Valid Category category, HttpServletResponse response) {
-		Category categorySaved = repository.save(category);
+	public ResponseEntity<Category> save(@RequestBody @Valid @NotNull CategoryDTO categoryDTO,
+										 HttpServletResponse response) {
+		Category categorySaved = repository.save(categoryDTO.to());
 		
 		publisher.publishEvent(new ResourceCreatedEvent(this, response, categorySaved.getId()));
 		
@@ -55,21 +58,17 @@ public class CategoryResource {
 	}
 	
 	@PutMapping(UrlConstants.PARAM_ID)
-	public ResponseEntity<Category> update(@RequestBody @Valid Category category, @PathVariable("id") Long id, 
+	public ResponseEntity<Category> update(@RequestBody @Valid @NotNull CategoryDTO categoryDTO, @PathVariable("id") Long id,
 			HttpServletResponse response) {
-		Category categorySaved = service.update(category, id);
+		Category categorySaved = service.update(categoryDTO.to(), id);
 		publisher.publishEvent(new ResourceCreatedEvent(this, response, categorySaved.getId()));
 		return ResponseEntity.ok(categorySaved);
 	}
 	
 	@GetMapping(UrlConstants.PARAM_ID)
 	@ResponseBody
-	public ResponseEntity<Category> view(@PathVariable("id") Long id) {
-		Category category = repository.findOne(id);
-		if (category != null)
-			return ResponseEntity.ok().body(category);
-		
-		return ResponseEntity.notFound().build();
+	public ResponseEntity<CategoryDTO> view(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(CategoryDTO.from(service.findById(id)));
 	}
 	
 	@DeleteMapping(UrlConstants.PARAM_ID)

@@ -1,6 +1,6 @@
-package com.quadrosepaineisapi.service;
+package com.quadrosepaineisapi.product.services;
 
-import com.quadrosepaineisapi.model.Product;
+import com.quadrosepaineisapi.product.Product;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -18,6 +18,8 @@ public interface ProductService {
     Product view(Long id);
 
     void uploadImage(Long id, MultipartFile photo);
+
+    void uploadToMinio(Long id, MultipartFile photo);
 
     void uploadGallery(Long productId, List<MultipartFile> gallery);
 
